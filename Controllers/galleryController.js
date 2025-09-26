@@ -1,3 +1,24 @@
+// Delete a gallery item
+export const deleteGallery = async (req, res) => {
+  const { id } = req.params;
+  const { email, password } = req.body;
+  // Admin auth
+  if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Unauthorized: Invalid admin credentials" });
+  }
+  try {
+    const { error } = await supabase
+      .from("Gallery")
+      .delete()
+      .eq("id", id);
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(200).json({ message: "Gallery item deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+};
 import { supabase } from "../Config/supabase.js";
 import cloudinary from "cloudinary";
 

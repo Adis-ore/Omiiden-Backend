@@ -106,3 +106,24 @@ export const getEvents = async (req, res) => {
     res.status(500).json({ error: "Server error", details: err.message });
   }
 };
+
+// Delete Event
+export const deleteEvent = async (req, res) => {
+  const { id } = req.params;
+  const { email, password } = req.body;
+  if (email !== process.env.ADMIN_EMAIL || password !== process.env.ADMIN_PASSWORD) {
+    return res.status(401).json({ error: "Unauthorized: Invalid admin credentials" });
+  }
+  try {
+    const { error } = await supabase
+      .from("Events")
+      .delete()
+      .eq("id", id);
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+    res.status(200).json({ message: "Event deleted" });
+  } catch (err) {
+    res.status(500).json({ error: "Server error", details: err.message });
+  }
+};
