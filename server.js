@@ -15,22 +15,26 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Middleware
-const allowedOrigins = ["https://omiiden-admin.vercel.app", "https://omiiden.vercel.app"];
+const allowedOrigins = [
+  "https://omiiden-admin.vercel.app",
+  "https://omiiden.vercel.app",
+  "http://localhost:5173" 
+];
 
 app.use(
   cors({
-    origin: function (origin, callback) {
-      // allow requests with no origin (like mobile apps or curl requests)
-      if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) {
-        return callback(null, true);
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
       } else {
-        return callback(new Error("Not allowed by CORS"));
+        console.error("Blocked by CORS:", origin);
+        callback(null, false); 
       }
     },
     credentials: true,
   })
 );
+
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
